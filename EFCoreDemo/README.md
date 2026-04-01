@@ -10,7 +10,7 @@ A small console app to study PostgreSQL connection and data operations with EF C
 
 ## Prerequisites
 
-- .NET SDK (project targets `net10.0`)
+- .NET SDK (project targets `net8.0`)
 - A reachable PostgreSQL server (local or cloud)
 
 ## Option A — Start PostgreSQL locally with Docker (recommended)
