@@ -1,83 +1,52 @@
-# EFCoreDemo
+# EFCoreDemo (PostgreSQL + C#/.NET Basics)
 
-A basic .NET console application demonstrating Entity Framework Core with PostgreSQL.
+A small console app to study PostgreSQL connection and data operations with EF Core.
+
+## What was improved
+
+- Connection string is now configurable through environment variable (`PG_CONNECTION_STRING`).
+- App performs a **connection test first**, then gives actionable help if PostgreSQL is not reachable.
+- Output is structured for easier debugging/study sessions.
 
 ## Prerequisites
 
-- .NET 10.0 SDK
-- Docker (for PostgreSQL)
-- PostgreSQL running in Docker container
+- .NET SDK (project targets `net8.0`)
+- A reachable PostgreSQL server (local or cloud)
 
-## Setup
+## Option A — Start PostgreSQL locally with Docker (recommended)
 
-1. Ensure PostgreSQL is running:
-   ```bash
-   docker run -d --name postgres-dev -e POSTGRES_PASSWORD=devpassword -e POSTGRES_DB=devdb -p 5432:5432 postgres:15
-   ```
-
-2. Restore packages:
-   ```bash
-   dotnet restore
-   ```
-
-3. Run the application:
-   ```bash
-   dotnet run
-   ```
-
-## What this demo does
-
-This application demonstrates basic database operations using Entity Framework Core:
-
-1. **Database Creation**: Uses `EnsureCreated()` to create the database and tables if they don't exist.
-2. **Data Seeding**: Adds sample data (5 people with names, heights, and ages).
-3. **Data Retrieval**: Queries and displays all records.
-4. **Data Filtering**: Shows how to filter data using LINQ.
-
-## Database Schema
-
-The `Deneme` table has:
-- `Name` (string, primary key)
-- `Height` (double)
-- `Age` (int)
-
-## Entity Framework Core Basics
-
-### DbContext
-- `AppDbContext` inherits from `DbContext`
-- Represents a session with the database
-- Configured in `OnConfiguring` method with connection string
-
-### Models
-- `Deneme` class represents the database table
-- Properties map to columns
-- `[Key]` attribute marks the primary key
-
-### Operations
-- `AddRange()`: Adds multiple entities
-- `SaveChanges()`: Commits changes to database
-- `ToList()`: Executes query and returns results
-- `Where()`: Filters data with LINQ
-
-## Migrations
-
-Migrations allow versioning database schema changes:
-
-1. Create migration: `dotnet ef migrations add MigrationName`
-2. Apply migration: `dotnet ef database update`
-3. View migrations: `dotnet ef migrations list`
-
-In this demo, we used `EnsureCreated()` for simplicity, but migrations are preferred for production.
-
-## Connection String
-
-```
-Host=localhost;Database=devdb;Username=postgres;Password=devpassword
+```bash
+docker run --name pg-study \
+  -e POSTGRES_PASSWORD=devpassword \
+  -e POSTGRES_DB=devdb \
+  -p 5432:5432 \
+  -d postgres:16
 ```
 
-## Next Steps
+Then run:
 
-- Learn about authentication and security
-- Implement CRUD operations (Create, Read, Update, Delete)
-- Use migrations for schema changes
-- Add relationships between tables
+```bash
+dotnet run --project EFCoreDemo
+```
+
+## Option B — Use a free managed PostgreSQL instance
+
+You can use providers like Neon or Supabase and paste the provided connection string:
+
+```bash
+export PG_CONNECTION_STRING="Host=...;Port=5432;Database=...;Username=...;Password=...;SSL Mode=Require;Trust Server Certificate=true"
+dotnet run --project EFCoreDemo
+```
+
+## What the app demonstrates
+
+1. Connection check via `NpgsqlConnection`.
+2. Database/table creation via `EnsureCreated()`.
+3. Seed data insertion.
+4. Query all rows and filtered rows using LINQ.
+
+## Useful study/debug tips
+
+- Set `PG_CONNECTION_STRING` per terminal session to switch environments quickly.
+- Keep `EnsureCreated()` for learning; move to EF Core Migrations for real projects.
+- To see SQL statements, add EF Core logging in `AppDbContext` later as your next exercise.
