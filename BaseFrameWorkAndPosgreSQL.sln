@@ -1,40 +1,35 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EFCoreDemo", "EFCoreDemo", "{32BDF3FB-F8FB-6CB9-576A-15CA69DA6AAE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCoreDemo", "EFCoreDemo\EFCoreDemo\EFCoreDemo.csproj", "{B61792CB-CC20-2FE9-764C-F3C381597FC9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EFCoreDemo (1)", "EFCoreDemo (1)", "{9D1296B4-1DA0-63B3-6EB9-2CBBBD168E0E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EFCoreDemo", "EFCoreDemo", "{2EEFECB0-5D7E-334E-90AA-852C84FB84B5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCoreDemo", "EFCoreDemo\EFCoreDemo\EFCoreDemo\EFCoreDemo\EFCoreDemo.csproj", "{7D52B349-F834-836A-2C62-755D376C5EF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCoreDemo", "EFCoreDemo\EFCoreDemo.csproj", "{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B61792CB-CC20-2FE9-764C-F3C381597FC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B61792CB-CC20-2FE9-764C-F3C381597FC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B61792CB-CC20-2FE9-764C-F3C381597FC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B61792CB-CC20-2FE9-764C-F3C381597FC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D52B349-F834-836A-2C62-755D376C5EF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D52B349-F834-836A-2C62-755D376C5EF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D52B349-F834-836A-2C62-755D376C5EF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D52B349-F834-836A-2C62-755D376C5EF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Debug|x64.Build.0 = Debug|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Debug|x86.Build.0 = Debug|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Release|x64.ActiveCfg = Release|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Release|x64.Build.0 = Release|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Release|x86.ActiveCfg = Release|Any CPU
+		{8EDC50A7-E0F4-4153-A75B-7A5851EBA1B1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{B61792CB-CC20-2FE9-764C-F3C381597FC9} = {32BDF3FB-F8FB-6CB9-576A-15CA69DA6AAE}
-		{9D1296B4-1DA0-63B3-6EB9-2CBBBD168E0E} = {32BDF3FB-F8FB-6CB9-576A-15CA69DA6AAE}
-		{2EEFECB0-5D7E-334E-90AA-852C84FB84B5} = {9D1296B4-1DA0-63B3-6EB9-2CBBBD168E0E}
-		{7D52B349-F834-836A-2C62-755D376C5EF2} = {2EEFECB0-5D7E-334E-90AA-852C84FB84B5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4791731-60C7-4CDA-BA42-6F1B55660D58}
