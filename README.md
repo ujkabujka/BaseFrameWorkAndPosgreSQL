@@ -7,6 +7,7 @@ The main learning project is `EFCoreDemo/EFCoreDemo.csproj`. It demonstrates:
 - connection setup for local PostgreSQL or Supabase
 - entity and `DbContext` configuration
 - EF Core migrations
+- EF Core database-first scaffolding
 - basic CRUD operations
 - relationships with a join table
 - raw SQL examples

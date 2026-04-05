@@ -1,0 +1,6 @@
+namespace EFCoreDemo.Scaffolding.DatabaseFirst.Models.Generated;
+
+public partial class Student
+{
+    public string DisplayLabel => $"{Id} - {FullName}";
+}

@@ -9,10 +9,11 @@
 3. Create tables with EF Core migrations.
 4. Insert, read, update, and delete rows.
 5. Model relationships with a join table.
-6. Use LINQ with `Include`, projections, and filtering.
-7. Run raw SQL when EF Core is not enough.
-8. Save JSON into PostgreSQL `jsonb`.
-9. Wrap multiple changes in a transaction.
+6. Learn database-first scaffolding from an existing database.
+7. Use LINQ with `Include`, projections, and filtering.
+8. Run raw SQL when EF Core is not enough.
+9. Save JSON into PostgreSQL `jsonb`.
+10. Wrap multiple changes in a transaction.
 
 ## Project structure
 
@@ -26,6 +27,8 @@
   Contains the entity classes used throughout the examples.
 - `Examples/StudyRunner.cs`
   Contains the runnable examples for each topic.
+- `Scaffolding/DatabaseFirst/`
+  Contains the database-first study notes and scaffolding examples.
 
 ## Domain model used for learning
 
@@ -147,6 +150,34 @@ What to learn here:
 - migrations capture schema changes
 - `database update` applies those changes to PostgreSQL
 - `AppDbContextFactory` is what makes design-time migrations work
+
+## Step 4B: Learn database-first scaffolding
+
+This is the second workflow:
+
+- code-first
+  C# classes are the source of truth and migrations update the database.
+- database-first
+  The database is the source of truth and scaffolding generates the C# classes.
+
+Study guide:
+
+- `Scaffolding/DatabaseFirst/README.md`
+
+Quick commands:
+
+```powershell
+.\scripts\Scaffold-DatabaseFirst.ps1
+.\scripts\Scaffold-DatabaseFirst.ps1 -Schemas public -Force
+.\scripts\Scaffold-DatabaseFirst.ps1 -Tables students,courses,enrollments -ContextName SchoolCatalogContext -Force
+```
+
+What this teaches:
+
+- how to read an unknown database into C# entity classes
+- how EF Core generates a `DbContext` from schema
+- how to re-scaffold safely when the database changes
+- how to keep generated code separate from your custom code
 
 ## Step 5: Insert seed rows
 
@@ -325,4 +356,5 @@ entity.OwnsOne(course => course.Details, details =>
 - create a repository or service layer
 - add pagination examples
 - add optimistic concurrency examples
+- scaffold an existing Supabase database and compare it with the code-first model
 - connect the data layer to your BaseFramework UI project later

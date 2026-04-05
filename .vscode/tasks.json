@@ -70,6 +70,34 @@
             ],
             "isBackground": true,
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "scaffold-db-all",
+            "command": "powershell",
+            "type": "process",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/scripts/Scaffold-DatabaseFirst.ps1",
+                "-Force"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "scaffold-db-public",
+            "command": "powershell",
+            "type": "process",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/scripts/Scaffold-DatabaseFirst.ps1",
+                "-Schemas",
+                "public",
+                "-Force"
+            ],
+            "problemMatcher": []
         }
     ]
 }

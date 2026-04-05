@@ -39,6 +39,10 @@ public sealed class StudyRunner(string connectionString)
         Console.WriteLine("  3. EFCoreDemo/appsettings.local.json");
         Console.WriteLine("  4. EFCoreDemo/appsettings.example.json");
         Console.WriteLine("  5. Local default: Host=localhost;Port=5432;Database=efcore_study;Username=postgres;Password=devpassword");
+        Console.WriteLine();
+        Console.WriteLine("Database-first scaffolding study:");
+        Console.WriteLine("  - script: .\\scripts\\Scaffold-DatabaseFirst.ps1");
+        Console.WriteLine("  - guide : EFCoreDemo/Scaffolding/DatabaseFirst/README.md");
         return 0;
     }
 

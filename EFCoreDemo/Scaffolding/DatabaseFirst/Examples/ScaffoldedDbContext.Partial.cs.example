@@ -1,0 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+
+namespace EFCoreDemo.Scaffolding.DatabaseFirst.Context;
+
+public partial class DatabaseFirstContext
+{
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Student>()
+            .Property(student => student.FullName)
+            .HasMaxLength(150);
+    }
+}
