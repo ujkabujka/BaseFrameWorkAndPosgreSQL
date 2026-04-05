@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -7,60 +8,44 @@ namespace EFCoreDemo;
 
 public static class Program
 {
+
+    public static async Task<int> myconnection()
+    {
+
+        var connectionString = "Host=aws-0-eu-west-1.pooler.supabase.com;" +
+        "Database=postgres;" +
+        "Username=postgres.dgjhlemxztrwyfvyyxrd;" +
+        "Password=ujkabujka31;" +
+        "SSL Mode=Require;" +
+        "Trust Server Certificate=true";
+
+        CanOpenConnection(connectionString);
+        try
+        {
+            await using var db = new AppDbContext(connectionString!);
+
+            var users = await db.Users.ToListAsync();
+
+            Console.WriteLine("Users:");
+            foreach (var user in users)
+            {
+                Console.WriteLine($"{user.Id} - {user.Username} - {user.Email}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+
+        return 1;
+    }
     private const string DefaultConnectionString = "Host=localhost;Port=5432;Database=devdb;Username=postgres;Password=devpassword";
 
-    public static int Main()
+    public static async Task<int> Main()
     {
-        Console.WriteLine("PostgreSQL + EF Core study demo");
-        Console.WriteLine("===============================\n");
 
-        var connectionString = GetConnectionString();
-        Console.WriteLine($"Using database host: {new NpgsqlConnectionStringBuilder(connectionString).Host}");
+        await myconnection();
 
-        if (!CanOpenConnection(connectionString))
-        {
-            Console.WriteLine("\nCould not connect to PostgreSQL.");
-            PrintHelp();
-            return 1;
-        }
-
-        using var context = new AppDbContext(connectionString);
-
-        Console.WriteLine("\n1) Ensuring database exists...");
-        context.Database.EnsureCreated();
-        Console.WriteLine("Database is ready.");
-
-        Console.WriteLine("\n2) Seeding sample rows (if needed)...");
-        if (!context.Denemes.Any())
-        {
-            context.Denemes.AddRange(
-                new Deneme { Name = "Alice", Height = 165.5, Age = 25 },
-                new Deneme { Name = "Bob", Height = 180.2, Age = 30 },
-                new Deneme { Name = "Charlie", Height = 175.0, Age = 28 },
-                new Deneme { Name = "Diana", Height = 160.3, Age = 22 },
-                new Deneme { Name = "Eve", Height = 170.8, Age = 35 });
-            context.SaveChanges();
-            Console.WriteLine("Sample data inserted.");
-        }
-        else
-        {
-            Console.WriteLine("Data already present. Seed skipped.");
-        }
-
-        Console.WriteLine("\n3) Query all rows:");
-        foreach (var person in context.Denemes.OrderBy(p => p.Name))
-        {
-            Console.WriteLine($"- {person.Name,-8} | {person.Height,6} cm | {person.Age,2} years");
-        }
-
-        Console.WriteLine("\n4) Filter: people taller than 170 cm");
-        var tallPeople = context.Denemes.Where(p => p.Height > 170).OrderBy(p => p.Height).ToList();
-        foreach (var person in tallPeople)
-        {
-            Console.WriteLine($"- {person.Name} ({person.Height} cm)");
-        }
-
-        Console.WriteLine("\nDone. Tip: set PG_CONNECTION_STRING to switch servers quickly.");
         return 0;
     }
 

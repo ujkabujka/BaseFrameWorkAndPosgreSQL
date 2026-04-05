@@ -11,10 +11,21 @@ public class AppDbContext : DbContext
         _connectionString = connectionString;
     }
 
-    public DbSet<Deneme> Denemes => Set<Deneme>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(_connectionString);
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>().ToTable("users");
+
+        modelBuilder.Entity<User>().HasKey(u => u.Id);
+
+        modelBuilder.Entity<User>().Property(u => u.Id).HasColumnName("id");
+        modelBuilder.Entity<User>().Property(u => u.Username).HasColumnName("username");
+        modelBuilder.Entity<User>().Property(u => u.Email).HasColumnName("email");
     }
 }
