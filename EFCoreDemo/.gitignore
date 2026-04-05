@@ -175,9 +175,6 @@ artifacts/
 # .NET tools directory
 .dotnet/
 
-# Entity Framework Core migrations
-Migrations/
-
 # mypy
 .mypy_cache/
 .dmypy.json
