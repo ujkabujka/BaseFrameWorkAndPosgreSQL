@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/EFCoreDemo/bin/Debug/net10.0/EFCoreDemo.dll",
+            "program": "${workspaceFolder}/EFCoreDemo/bin/Debug/net8.0/EFCoreDemo.dll",
             "args": [],
             "cwd": "${workspaceFolder}/EFCoreDemo",
             "stopAtEntry": false,
