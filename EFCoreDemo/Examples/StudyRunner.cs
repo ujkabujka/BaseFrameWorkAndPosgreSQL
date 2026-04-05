@@ -22,6 +22,7 @@ public sealed class StudyRunner(string connectionString)
         Console.WriteLine("  dotnet run --project EFCoreDemo -- migrate");
         Console.WriteLine("  dotnet run --project EFCoreDemo -- seed");
         Console.WriteLine("  dotnet run --project EFCoreDemo -- basic");
+        Console.WriteLine("  dotnet run --project EFCoreDemo -- queries");
         Console.WriteLine("  dotnet run --project EFCoreDemo -- relationships");
         Console.WriteLine("  dotnet run --project EFCoreDemo -- json");
         Console.WriteLine("  dotnet run --project EFCoreDemo -- rawsql");
@@ -226,6 +227,9 @@ public sealed class StudyRunner(string connectionString)
         db.SaveChanges();
         Console.WriteLine($"Inserted student with Id={tempStudent.Id}.");
 
+        // WHERE + ORDER BY + LIMIT
+        // EF Core translates this into a SELECT query with filtering/sorting in PostgreSQL.
+        // AsNoTracking() is useful for read-only queries because EF does not track entity changes.
         var firstStudents = db.Students
             .AsNoTracking()
             .OrderBy(student => student.FullName)
@@ -238,6 +242,8 @@ public sealed class StudyRunner(string connectionString)
             Console.WriteLine($"  {student.Id} | {student.FullName} | {student.Email}");
         }
 
+        // WHERE Email LIKE '%@study.local' ORDER BY Email
+        // This is a basic filtering example. EndsWith() becomes a SQL string filter.
         var filteredStudents = db.Students
             .AsNoTracking()
             .Where(student => student.Email.EndsWith("@study.local"))
@@ -257,6 +263,113 @@ public sealed class StudyRunner(string connectionString)
         return 0;
     }
 
+    public int RunQueryLearningExamples()
+    {
+        PrintSection("Query Learning Examples");
+
+        using var db = CreateDbContext();
+        db.Database.Migrate();
+        SeedIfEmpty(db);
+
+        // COUNT(*)
+        // EF Core translates Count() to SQL COUNT on the database side.
+        var totalStudents = db.Students.Count();
+        Console.WriteLine($"Count example: total students = {totalStudents}");
+
+        // EXISTS(...)
+        // Any() is usually translated as an efficient EXISTS query.
+        var hasAdvancedCourse = db.Courses.Any(course => course.Difficulty == CourseDifficulty.Advanced);
+        Console.WriteLine($"Any example: advanced course exists = {hasAdvancedCourse}");
+
+        // SELECT TOP 1 / LIMIT 1
+        // FirstOrDefault() returns one row or null/default if nothing matches.
+        var beginnerCourse = db.Courses
+            .AsNoTracking()
+            .FirstOrDefault(course => course.Difficulty == CourseDifficulty.Beginner);
+        Console.WriteLine($"FirstOrDefault example: beginner course = {beginnerCourse?.Title ?? "not found"}");
+
+        // INNER JOIN students -> enrollments -> courses
+        // This explicit LINQ join is close to SQL JOIN syntax and is useful for learning.
+        var joinRows = (
+            from student in db.Students.AsNoTracking()
+            join enrollment in db.Enrollments.AsNoTracking() on student.Id equals enrollment.StudentId
+            join course in db.Courses.AsNoTracking() on enrollment.CourseId equals course.Id
+            orderby student.FullName, course.Title
+            select new
+            {
+                StudentName = student.FullName,
+                CourseTitle = course.Title,
+                enrollment.ProgressPercent
+            })
+            .ToList();
+
+        Console.WriteLine("Join example:");
+        foreach (var row in joinRows)
+        {
+            Console.WriteLine($"  {row.StudentName} -> {row.CourseTitle} ({row.ProgressPercent}%)");
+        }
+
+        // GROUP BY with COUNT and AVG
+        // This is the EF Core equivalent of:
+        // SELECT CourseId, COUNT(*), AVG(ProgressPercent) FROM enrollments GROUP BY CourseId
+        var groupedProgress = db.Enrollments
+            .AsNoTracking()
+            .GroupBy(enrollment => enrollment.CourseId)
+            .Select(group => new
+            {
+                CourseId = group.Key,
+                StudentCount = group.Count(),
+                AverageProgress = Math.Round(group.Average(item => item.ProgressPercent), 1)
+            })
+            .OrderBy(item => item.CourseId)
+            .ToList();
+
+        Console.WriteLine("GroupBy example:");
+        foreach (var group in groupedProgress)
+        {
+            Console.WriteLine($"  CourseId={group.CourseId} | count={group.StudentCount} | avg={group.AverageProgress}");
+        }
+
+        // LEFT JOIN behavior
+        // GroupJoin + DefaultIfEmpty() is the usual LINQ pattern for a SQL LEFT JOIN.
+        var leftJoinRows = (
+            from student in db.Students.AsNoTracking()
+            join enrollment in db.Enrollments.AsNoTracking() on student.Id equals enrollment.StudentId into studentEnrollments
+            from enrollment in studentEnrollments.DefaultIfEmpty()
+            select new
+            {
+                student.FullName,
+                CourseId = enrollment != null ? enrollment.CourseId : (int?)null
+            })
+            .OrderBy(item => item.FullName)
+            .ToList();
+
+        Console.WriteLine("Left join example:");
+        foreach (var row in leftJoinRows.Take(5))
+        {
+            Console.WriteLine($"  {row.FullName} | CourseId={row.CourseId?.ToString() ?? "NULL"}");
+        }
+
+        // Pagination
+        // Skip/Take is translated to OFFSET/LIMIT in PostgreSQL.
+        var pageNumber = 1;
+        var pageSize = 2;
+        var pagedStudents = db.Students
+            .AsNoTracking()
+            .OrderBy(student => student.Id)
+            .Skip(pageNumber * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        Console.WriteLine("Pagination example:");
+        foreach (var student in pagedStudents)
+        {
+            Console.WriteLine($"  page row -> {student.Id} | {student.FullName}");
+        }
+
+        return 0;
+    }
+
     public int RunRelationshipExamples()
     {
         PrintSection("Relationships");
@@ -265,6 +378,10 @@ public sealed class StudyRunner(string connectionString)
         db.Database.Migrate();
         SeedIfEmpty(db);
 
+        // Include + ThenInclude does not mean "manual join result rows" in your C# code.
+        // It tells EF Core to load related entities as an object graph:
+        // Student -> Enrollments -> Course
+        // In SQL terms this is fulfilled by related queries or joins generated by EF Core.
         var student = db.Students
             .Include(item => item.Enrollments)
             .ThenInclude(item => item.Course)
@@ -293,6 +410,9 @@ public sealed class StudyRunner(string connectionString)
             Console.WriteLine($"Added new enrollment: {student.FullName} -> {missingCourse.Title}");
         }
 
+        // Projection example:
+        // Instead of loading full entity graphs, Select() shapes only the data we want.
+        // This is similar to writing a custom SELECT list in SQL.
         var courseSummaries = db.Courses
             .AsNoTracking()
             .OrderBy(course => course.Title)
@@ -323,6 +443,8 @@ public sealed class StudyRunner(string connectionString)
         db.Database.Migrate();
         SeedIfEmpty(db);
 
+        // Filtering by values inside a JSON-mapped owned type.
+        // EF Core + Npgsql translates this into PostgreSQL jsonb access under the hood.
         var advancedCourses = db.Courses
             .AsNoTracking()
             .Where(course => course.Details.EstimatedHours >= 8)
@@ -369,6 +491,9 @@ public sealed class StudyRunner(string connectionString)
 
         const decimal minimumPrice = 70m;
 
+        // Raw SQL example.
+        // Use this when EF LINQ is not enough or when you want exact SQL control.
+        // FromSqlInterpolated keeps the query parameterized, which helps protect against SQL injection.
         var expensiveCourses = db.Courses
             .FromSqlInterpolated($@"SELECT * FROM courses WHERE ""Price"" >= {minimumPrice}")
             .AsNoTracking()
@@ -382,6 +507,9 @@ public sealed class StudyRunner(string connectionString)
         }
 
         var jsonArea = "json-demo";
+        // PostgreSQL-specific JSON operator:
+        // payload ->> 'area'
+        // This reads the 'area' property from a jsonb column as text.
         var matchingAuditLogs = db.AuditLogs
             .FromSqlInterpolated($@"SELECT * FROM audit_logs WHERE payload ->> 'area' = {jsonArea}")
             .AsNoTracking()
@@ -436,6 +564,7 @@ public sealed class StudyRunner(string connectionString)
         ApplyMigrations();
         SeedSampleData();
         RunBasicCrud();
+        RunQueryLearningExamples();
         RunRelationshipExamples();
         RunJsonExamples();
         RunRawSqlExamples();

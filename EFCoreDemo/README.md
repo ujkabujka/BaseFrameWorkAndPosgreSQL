@@ -213,7 +213,25 @@ This command shows:
 - `UPDATE` by changing a tracked entity
 - `DELETE` by removing the entity and saving again
 
-## Step 7: Relationship example
+## Step 7: Query examples from basic to advanced
+
+```bash
+dotnet run --project EFCoreDemo -- queries
+```
+
+This command shows commented examples in code for:
+
+- `Count()` -> SQL `COUNT(*)`
+- `Any()` -> SQL `EXISTS`
+- `FirstOrDefault()` -> first matching row or no row
+- explicit `join` -> SQL `INNER JOIN`
+- `GroupBy()` with `Count()` and `Average()`
+- left join pattern with `GroupJoin` and `DefaultIfEmpty()`
+- `Skip()` and `Take()` -> SQL `OFFSET` and `LIMIT`
+
+The related code is in `Examples/StudyRunner.cs`, with comments explaining what each LINQ query does at SQL level.
+
+## Step 8: Relationship example
 
 ```bash
 dotnet run --project EFCoreDemo -- relationships
@@ -226,7 +244,7 @@ This command shows:
 - projection with `Select`
 - aggregate values such as `Count` and `Average`
 
-## Step 8: JSON storage example
+## Step 9: JSON storage example
 
 ```bash
 dotnet run --project EFCoreDemo -- json
@@ -245,7 +263,7 @@ Study points:
 - serializing with `System.Text.Json`
 - querying typed JSON data with LINQ
 
-## Step 9: Raw SQL example
+## Step 10: Raw SQL example
 
 ```bash
 dotnet run --project EFCoreDemo -- rawsql
@@ -257,7 +275,7 @@ This command shows:
 - parameterized SQL
 - a PostgreSQL JSON operator query: `payload ->> 'area'`
 
-## Step 10: Transaction example
+## Step 11: Transaction example
 
 ```bash
 dotnet run --project EFCoreDemo -- transaction

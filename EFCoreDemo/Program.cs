@@ -21,6 +21,7 @@ public static class Program
                 "migrate" => runner.ApplyMigrations(),
                 "seed" => runner.SeedSampleData(),
                 "basic" => runner.RunBasicCrud(),
+                "queries" => runner.RunQueryLearningExamples(),
                 "relationships" => runner.RunRelationshipExamples(),
                 "json" => runner.RunJsonExamples(),
                 "rawsql" => runner.RunRawSqlExamples(),

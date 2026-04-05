@@ -44,6 +44,8 @@ public class AppDbContext(string connectionString) : DbContext
             entity.Property(course => course.CreatedAtUtc);
             entity.HasIndex(course => course.Title).IsUnique();
 
+            // OwnsOne + ToJson maps the Details object into one PostgreSQL jsonb column
+            // instead of creating a separate relational table.
             entity.OwnsOne(course => course.Details, details =>
             {
                 details.ToJson();
@@ -58,10 +60,14 @@ public class AppDbContext(string connectionString) : DbContext
         modelBuilder.Entity<Enrollment>(entity =>
         {
             entity.ToTable("enrollments");
+
+            // Composite key: one student can enroll in one course only once.
             entity.HasKey(enrollment => new { enrollment.StudentId, enrollment.CourseId });
             entity.Property(enrollment => enrollment.ProgressPercent);
             entity.Property(enrollment => enrollment.EnrolledAtUtc);
 
+            // These two foreign keys create the join table relationship:
+            // students <-> enrollments <-> courses
             entity
                 .HasOne(enrollment => enrollment.Student)
                 .WithMany(student => student.Enrollments)
