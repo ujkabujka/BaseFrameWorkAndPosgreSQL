@@ -5,7 +5,7 @@ namespace EFCoreDemo;
 
 public static class Program
 {
-    public static async Task<int> Main(string[] args)
+    public static int Main(string[] args)
     {
         var command = (args.FirstOrDefault() ?? "help").Trim().ToLowerInvariant();
         var connectionString = ConnectionStringResolver.Resolve();
@@ -15,18 +15,18 @@ public static class Program
         {
             return command switch
             {
-                "help" => await runner.PrintHelpAsync(),
-                "info" => await runner.PrintConnectionInfoAsync(),
-                "canconnect" => await runner.CanConnectAsync(),
-                "migrate" => await runner.ApplyMigrationsAsync(),
-                "seed" => await runner.SeedSampleDataAsync(),
-                "basic" => await runner.RunBasicCrudAsync(),
-                "relationships" => await runner.RunRelationshipExamplesAsync(),
-                "json" => await runner.RunJsonExamplesAsync(),
-                "rawsql" => await runner.RunRawSqlExamplesAsync(),
-                "transaction" => await runner.RunTransactionExampleAsync(),
-                "all" => await runner.RunFullStudyGuideAsync(),
-                _ => await runner.PrintUnknownCommandAsync(command)
+                "help" => runner.PrintHelp(),
+                "info" => runner.PrintConnectionInfo(),
+                "canconnect" => runner.CanConnect(),
+                "migrate" => runner.ApplyMigrations(),
+                "seed" => runner.SeedSampleData(),
+                "basic" => runner.RunBasicCrud(),
+                "relationships" => runner.RunRelationshipExamples(),
+                "json" => runner.RunJsonExamples(),
+                "rawsql" => runner.RunRawSqlExamples(),
+                "transaction" => runner.RunTransactionExample(),
+                "all" => runner.RunFullStudyGuide(),
+                _ => runner.PrintUnknownCommand(command)
             };
         }
         catch (Exception ex)

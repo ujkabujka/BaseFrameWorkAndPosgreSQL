@@ -12,7 +12,7 @@ public sealed class StudyRunner(string connectionString)
     private readonly string _connectionString = connectionString;
     private readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = false };
 
-    public Task<int> PrintHelpAsync()
+    public int PrintHelp()
     {
         PrintSection("EF Core PostgreSQL Study Runner");
         Console.WriteLine("Commands:");
@@ -38,31 +38,31 @@ public sealed class StudyRunner(string connectionString)
         Console.WriteLine("  2. PG_CONNECTION_STRING");
         Console.WriteLine("  3. EFCoreDemo/appsettings.local.json");
         Console.WriteLine("  4. Local default: Host=localhost;Port=5432;Database=efcore_study;Username=postgres;Password=devpassword");
-        return Task.FromResult(0);
+        return 0;
     }
 
-    public async Task<int> PrintUnknownCommandAsync(string command)
+    public int PrintUnknownCommand(string command)
     {
         Console.WriteLine($"Unknown command: {command}");
         Console.WriteLine("Run `dotnet run --project EFCoreDemo -- help` to see the study commands.");
-        return await PrintHelpAsync();
+        return PrintHelp();
     }
 
-    public Task<int> PrintConnectionInfoAsync()
+    public int PrintConnectionInfo()
     {
         PrintSection("Connection Info");
         Console.WriteLine(ConnectionStringResolver.Describe(_connectionString));
-        return Task.FromResult(0);
+        return 0;
     }
 
-    public async Task<int> CanConnectAsync()
+    public int CanConnect()
     {
         PrintSection("Connection Test");
 
         try
         {
-            await using var connection = new NpgsqlConnection(_connectionString);
-            await connection.OpenAsync();
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
 
             Console.WriteLine($"Connected to PostgreSQL {connection.PostgreSqlVersion}.");
             Console.WriteLine(ConnectionStringResolver.Describe(_connectionString));
@@ -77,12 +77,12 @@ public sealed class StudyRunner(string connectionString)
         }
     }
 
-    public async Task<int> ApplyMigrationsAsync()
+    public int ApplyMigrations()
     {
         PrintSection("Apply Migrations");
 
-        await using var db = CreateDbContext();
-        var pendingMigrations = await db.Database.GetPendingMigrationsAsync();
+        using var db = CreateDbContext();
+        var pendingMigrations = db.Database.GetPendingMigrations().ToList();
 
         if (!pendingMigrations.Any())
         {
@@ -96,19 +96,19 @@ public sealed class StudyRunner(string connectionString)
             Console.WriteLine($"  - {migration}");
         }
 
-        await db.Database.MigrateAsync();
+        db.Database.Migrate();
         Console.WriteLine("Database schema is now up to date.");
         return 0;
     }
 
-    public async Task<int> SeedSampleDataAsync()
+    public int SeedSampleData()
     {
         PrintSection("Seed Sample Data");
 
-        await using var db = CreateDbContext();
-        await db.Database.MigrateAsync();
+        using var db = CreateDbContext();
+        db.Database.Migrate();
 
-        if (await db.Students.AnyAsync() || await db.Courses.AnyAsync())
+        if (db.Students.Any() || db.Courses.Any())
         {
             Console.WriteLine("Sample data already exists, so the seed step was skipped.");
             return 0;
@@ -178,7 +178,7 @@ public sealed class StudyRunner(string connectionString)
 
         db.Students.AddRange(students);
         db.Courses.AddRange(courses);
-        await db.SaveChangesAsync();
+        db.SaveChanges();
 
         db.Enrollments.AddRange(
             new Enrollment { StudentId = students[0].Id, CourseId = courses[0].Id, ProgressPercent = 35 },
@@ -198,18 +198,18 @@ public sealed class StudyRunner(string connectionString)
             }, _jsonOptions)
         });
 
-        await db.SaveChangesAsync();
+        db.SaveChanges();
 
         Console.WriteLine("Inserted 3 students, 3 courses, 4 enrollments, and 1 audit log.");
         return 0;
     }
 
-    public async Task<int> RunBasicCrudAsync()
+    public int RunBasicCrud()
     {
         PrintSection("Basic CRUD");
 
-        await using var db = CreateDbContext();
-        await db.Database.MigrateAsync();
+        using var db = CreateDbContext();
+        db.Database.Migrate();
 
         var tempStudent = new Student
         {
@@ -218,14 +218,14 @@ public sealed class StudyRunner(string connectionString)
         };
 
         db.Students.Add(tempStudent);
-        await db.SaveChangesAsync();
+        db.SaveChanges();
         Console.WriteLine($"Inserted student with Id={tempStudent.Id}.");
 
-        var firstStudents = await db.Students
+        var firstStudents = db.Students
             .AsNoTracking()
             .OrderBy(student => student.FullName)
             .Take(5)
-            .ToListAsync();
+            .ToList();
 
         Console.WriteLine("Read example:");
         foreach (var student in firstStudents)
@@ -233,38 +233,38 @@ public sealed class StudyRunner(string connectionString)
             Console.WriteLine($"  {student.Id} | {student.FullName} | {student.Email}");
         }
 
-        var filteredStudents = await db.Students
+        var filteredStudents = db.Students
             .AsNoTracking()
             .Where(student => student.Email.EndsWith("@study.local"))
             .OrderBy(student => student.Email)
-            .ToListAsync();
+            .ToList();
 
         Console.WriteLine($"Filter example returned {filteredStudents.Count} study records.");
 
         tempStudent.FullName = "Basic CRUD Demo Updated";
-        await db.SaveChangesAsync();
+        db.SaveChanges();
         Console.WriteLine("Updated the inserted student.");
 
         db.Students.Remove(tempStudent);
-        await db.SaveChangesAsync();
+        db.SaveChanges();
         Console.WriteLine("Deleted the temporary student.");
 
         return 0;
     }
 
-    public async Task<int> RunRelationshipExamplesAsync()
+    public int RunRelationshipExamples()
     {
         PrintSection("Relationships");
 
-        await using var db = CreateDbContext();
-        await db.Database.MigrateAsync();
-        await SeedIfEmptyAsync(db);
+        using var db = CreateDbContext();
+        db.Database.Migrate();
+        SeedIfEmpty(db);
 
-        var student = await db.Students
+        var student = db.Students
             .Include(item => item.Enrollments)
             .ThenInclude(item => item.Course)
             .OrderBy(item => item.Id)
-            .FirstAsync();
+            .First();
 
         Console.WriteLine($"{student.FullName} is enrolled in {student.Enrollments.Count} course(s).");
         foreach (var enrollment in student.Enrollments)
@@ -272,9 +272,9 @@ public sealed class StudyRunner(string connectionString)
             Console.WriteLine($"  {enrollment.Course.Title} | progress {enrollment.ProgressPercent}%");
         }
 
-        var missingCourse = await db.Courses
+        var missingCourse = db.Courses
             .OrderBy(course => course.Id)
-            .FirstOrDefaultAsync(course => student.Enrollments.All(enrollment => enrollment.CourseId != course.Id));
+            .FirstOrDefault(course => student.Enrollments.All(enrollment => enrollment.CourseId != course.Id));
 
         if (missingCourse is not null)
         {
@@ -284,11 +284,11 @@ public sealed class StudyRunner(string connectionString)
                 CourseId = missingCourse.Id,
                 ProgressPercent = 0
             });
-            await db.SaveChangesAsync();
+            db.SaveChanges();
             Console.WriteLine($"Added new enrollment: {student.FullName} -> {missingCourse.Title}");
         }
 
-        var courseSummaries = await db.Courses
+        var courseSummaries = db.Courses
             .AsNoTracking()
             .OrderBy(course => course.Title)
             .Select(course => new
@@ -299,7 +299,7 @@ public sealed class StudyRunner(string connectionString)
                     ? Math.Round(course.Enrollments.Average(enrollment => enrollment.ProgressPercent), 1)
                     : 0
             })
-            .ToListAsync();
+            .ToList();
 
         Console.WriteLine("Projection example:");
         foreach (var summary in courseSummaries)
@@ -310,19 +310,19 @@ public sealed class StudyRunner(string connectionString)
         return 0;
     }
 
-    public async Task<int> RunJsonExamplesAsync()
+    public int RunJsonExamples()
     {
         PrintSection("JSON Storage");
 
-        await using var db = CreateDbContext();
-        await db.Database.MigrateAsync();
-        await SeedIfEmptyAsync(db);
+        using var db = CreateDbContext();
+        db.Database.Migrate();
+        SeedIfEmpty(db);
 
-        var advancedCourses = await db.Courses
+        var advancedCourses = db.Courses
             .AsNoTracking()
             .Where(course => course.Details.EstimatedHours >= 8)
             .OrderBy(course => course.Details.EstimatedHours)
-            .ToListAsync();
+            .ToList();
 
         Console.WriteLine("Typed jsonb example with ToJson():");
         foreach (var course in advancedCourses)
@@ -347,28 +347,28 @@ public sealed class StudyRunner(string connectionString)
             EventName = "json.example.saved",
             Payload = jsonAuditPayload
         });
-        await db.SaveChangesAsync();
+        db.SaveChanges();
 
         Console.WriteLine("Saved a raw JSON string into the audit_logs.payload jsonb column.");
         Console.WriteLine(jsonAuditPayload);
         return 0;
     }
 
-    public async Task<int> RunRawSqlExamplesAsync()
+    public int RunRawSqlExamples()
     {
         PrintSection("Raw SQL");
 
-        await using var db = CreateDbContext();
-        await db.Database.MigrateAsync();
-        await SeedIfEmptyAsync(db);
+        using var db = CreateDbContext();
+        db.Database.Migrate();
+        SeedIfEmpty(db);
 
         const decimal minimumPrice = 70m;
 
-        var expensiveCourses = await db.Courses
+        var expensiveCourses = db.Courses
             .FromSqlInterpolated($@"SELECT * FROM courses WHERE ""Price"" >= {minimumPrice}")
             .AsNoTracking()
             .OrderBy(course => course.Price)
-            .ToListAsync();
+            .ToList();
 
         Console.WriteLine("FromSqlInterpolated example:");
         foreach (var course in expensiveCourses)
@@ -377,25 +377,25 @@ public sealed class StudyRunner(string connectionString)
         }
 
         var jsonArea = "json-demo";
-        var matchingAuditLogs = await db.AuditLogs
+        var matchingAuditLogs = db.AuditLogs
             .FromSqlInterpolated($@"SELECT * FROM audit_logs WHERE payload ->> 'area' = {jsonArea}")
             .AsNoTracking()
             .OrderByDescending(log => log.CreatedAtUtc)
             .Take(5)
-            .ToListAsync();
+            .ToList();
 
         Console.WriteLine($"PostgreSQL JSON operator example returned {matchingAuditLogs.Count} row(s).");
         return 0;
     }
 
-    public async Task<int> RunTransactionExampleAsync()
+    public int RunTransactionExample()
     {
         PrintSection("Transaction");
 
-        await using var db = CreateDbContext();
-        await db.Database.MigrateAsync();
+        using var db = CreateDbContext();
+        db.Database.Migrate();
 
-        await using var transaction = await db.Database.BeginTransactionAsync();
+        using var transaction = db.Database.BeginTransaction();
 
         var tempStudent = new Student
         {
@@ -404,7 +404,7 @@ public sealed class StudyRunner(string connectionString)
         };
 
         db.Students.Add(tempStudent);
-        await db.SaveChangesAsync();
+        db.SaveChanges();
 
         db.AuditLogs.Add(new AuditLog
         {
@@ -416,35 +416,35 @@ public sealed class StudyRunner(string connectionString)
                 committedAtUtc = DateTime.UtcNow
             }, _jsonOptions)
         });
-        await db.SaveChangesAsync();
+        db.SaveChanges();
 
-        await transaction.CommitAsync();
+        transaction.Commit();
 
         Console.WriteLine("Inserted one student and one audit log inside a single transaction.");
         return 0;
     }
 
-    public async Task<int> RunFullStudyGuideAsync()
+    public int RunFullStudyGuide()
     {
-        await PrintConnectionInfoAsync();
-        await CanConnectAsync();
-        await ApplyMigrationsAsync();
-        await SeedSampleDataAsync();
-        await RunBasicCrudAsync();
-        await RunRelationshipExamplesAsync();
-        await RunJsonExamplesAsync();
-        await RunRawSqlExamplesAsync();
-        await RunTransactionExampleAsync();
+        PrintConnectionInfo();
+        CanConnect();
+        ApplyMigrations();
+        SeedSampleData();
+        RunBasicCrud();
+        RunRelationshipExamples();
+        RunJsonExamples();
+        RunRawSqlExamples();
+        RunTransactionExample();
         return 0;
     }
 
     private AppDbContext CreateDbContext() => new(_connectionString);
 
-    private async Task SeedIfEmptyAsync(AppDbContext db)
+    private void SeedIfEmpty(AppDbContext db)
     {
-        if (!await db.Students.AnyAsync() || !await db.Courses.AnyAsync())
+        if (!db.Students.Any() || !db.Courses.Any())
         {
-            await SeedSampleDataAsync();
+            SeedSampleData();
         }
     }
 

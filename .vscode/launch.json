@@ -1,16 +1,68 @@
 {
     "version": "0.2.0",
+    "inputs": [
+        {
+            "id": "studyCommand",
+            "type": "pickString",
+            "description": "Choose the EFCoreDemo command to debug",
+            "options": [
+                "help",
+                "info",
+                "canconnect",
+                "migrate",
+                "seed",
+                "basic",
+                "relationships",
+                "json",
+                "rawsql",
+                "transaction",
+                "all"
+            ],
+            "default": "help"
+        }
+    ],
     "configurations": [
         {
-            "name": ".NET Core Launch (console)",
+            "name": "EFCoreDemo: Debug Command",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/EFCoreDemo/bin/Debug/net8.0-windows/EFCoreDemo.dll",
-            "args": [],
+            "program": "${workspaceFolder}/EFCoreDemo/bin/Debug/net8.0/EFCoreDemo.dll",
+            "args": [
+                "${input:studyCommand}"
+            ],
             "cwd": "${workspaceFolder}/EFCoreDemo",
             "stopAtEntry": false,
-            "console": "internalConsole"
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "EFCoreDemo: Debug Help",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/EFCoreDemo/bin/Debug/net8.0/EFCoreDemo.dll",
+            "args": [
+                "help"
+            ],
+            "cwd": "${workspaceFolder}/EFCoreDemo",
+            "stopAtEntry": false,
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "EFCoreDemo: Debug All",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/EFCoreDemo/bin/Debug/net8.0/EFCoreDemo.dll",
+            "args": [
+                "all"
+            ],
+            "cwd": "${workspaceFolder}/EFCoreDemo",
+            "stopAtEntry": false,
+            "console": "integratedTerminal",
+            "justMyCode": true
         },
         {
             "name": ".NET Core Attach",

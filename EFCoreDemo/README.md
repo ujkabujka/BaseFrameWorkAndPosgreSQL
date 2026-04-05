@@ -96,6 +96,28 @@ dotnet run --project EFCoreDemo -- info
 dotnet run --project EFCoreDemo -- canconnect
 ```
 
+## VS Code debugging
+
+This project now uses synchronous code paths so stepping through the learning flow is simpler in the debugger.
+
+Use these launch configurations in VS Code:
+
+- `EFCoreDemo: Debug Command`
+  Prompts you for a study command such as `basic`, `json`, or `all`.
+- `EFCoreDemo: Debug Help`
+  Starts the app with the `help` command.
+- `EFCoreDemo: Debug All`
+  Starts the full walkthrough.
+
+Debug steps:
+
+1. Open the repository in VS Code.
+2. Put breakpoints anywhere in `Program.cs`, `Examples/StudyRunner.cs`, or `Data/AppDbContext.cs`.
+3. Press `F5`.
+4. Choose one of the `EFCoreDemo` launch profiles.
+
+If you use Supabase, set `PG_CONNECTION_STRING` in the terminal or create `EFCoreDemo/appsettings.local.json` before debugging.
+
 ## Step 4: Create tables with migrations
 
 This project uses EF Core migrations, which is the correct approach for real applications.
