@@ -71,9 +71,10 @@ Priority order:
 1. `EFCOREDEMO_CONNECTION_STRING`
 2. `PG_CONNECTION_STRING`
 3. `EFCoreDemo/appsettings.local.json`
-4. fallback local default: `Host=localhost;Port=5432;Database=efcore_study;Username=postgres;Password=devpassword`
+4. `EFCoreDemo/appsettings.example.json`
+5. fallback local default: `Host=localhost;Port=5432;Database=efcore_study;Username=postgres;Password=devpassword`
 
-Example `EFCoreDemo/appsettings.local.json`:
+Example `EFCoreDemo/appsettings.example.json` or `EFCoreDemo/appsettings.local.json`:
 
 ```json
 {

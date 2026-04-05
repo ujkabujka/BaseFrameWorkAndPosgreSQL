@@ -37,7 +37,8 @@ public sealed class StudyRunner(string connectionString)
         Console.WriteLine("  1. EFCOREDEMO_CONNECTION_STRING");
         Console.WriteLine("  2. PG_CONNECTION_STRING");
         Console.WriteLine("  3. EFCoreDemo/appsettings.local.json");
-        Console.WriteLine("  4. Local default: Host=localhost;Port=5432;Database=efcore_study;Username=postgres;Password=devpassword");
+        Console.WriteLine("  4. EFCoreDemo/appsettings.example.json");
+        Console.WriteLine("  5. Local default: Host=localhost;Port=5432;Database=efcore_study;Username=postgres;Password=devpassword");
         return 0;
     }
 
@@ -72,7 +73,7 @@ public sealed class StudyRunner(string connectionString)
         {
             Console.WriteLine("Connection failed.");
             Console.WriteLine(ex.Message);
-            Console.WriteLine("Set PG_CONNECTION_STRING or EFCoreDemo/appsettings.local.json, then run the command again.");
+            Console.WriteLine("Set PG_CONNECTION_STRING, EFCoreDemo/appsettings.local.json, or EFCoreDemo/appsettings.example.json, then run the command again.");
             return 1;
         }
     }

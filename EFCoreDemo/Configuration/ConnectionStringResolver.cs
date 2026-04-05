@@ -82,7 +82,9 @@ public static class ConnectionStringResolver
         foreach (var directory in directories)
         {
             yield return Path.Combine(directory, "appsettings.local.json");
+            yield return Path.Combine(directory, "appsettings.example.json");
             yield return Path.Combine(directory, "EFCoreDemo", "appsettings.local.json");
+            yield return Path.Combine(directory, "EFCoreDemo", "appsettings.example.json");
         }
     }
 
