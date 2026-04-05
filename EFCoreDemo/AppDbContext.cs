@@ -25,7 +25,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>().HasKey(u => u.Id);
 
         modelBuilder.Entity<User>().Property(u => u.Id).HasColumnName("id");
-        modelBuilder.Entity<User>().Property(u => u.Username).HasColumnName("username");
+        modelBuilder.Entity<User>().Property(u => u.Username).HasColumnName("user_name");
         modelBuilder.Entity<User>().Property(u => u.Email).HasColumnName("email");
     }
 }
